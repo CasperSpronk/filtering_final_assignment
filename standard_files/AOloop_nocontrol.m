@@ -1,4 +1,4 @@
-function [ sigma ] = AOloop_nocontrol(phik,sigmae,H,G)
+function [ sigma, sk ] = AOloop_nocontrol(phik,sigmae,H,G)
 % Example of online AO simulation for open_loop measurements
 % IN
 % phik  : incoming turbulence wavefront
