@@ -1,0 +1,2 @@
+function [var_eps] = AOloopRW(G,H,C_phi_zero,sigma_e,phi_sim)
+[ sigma, sk ] = AOloop_nocontrol(phi_sim,sigmae,H,G)

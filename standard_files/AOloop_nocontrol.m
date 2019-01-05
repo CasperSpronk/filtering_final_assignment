@@ -9,6 +9,8 @@ function [ sigma, sk ] = AOloop_nocontrol(phik,sigmae,H,G)
 % sigma : mean variance of the residual wavefront
 
 
+phik = cell2mat(phik);
+
 n = size(H,1);      % dimension lifted wavefront
 ns = size(G,1);     % dimension lifted sensor slopes
 T = length(phik);   % number of temporal phase points
