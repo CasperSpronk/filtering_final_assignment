@@ -10,7 +10,7 @@ YssN = Y0sN(:, s:end);
 
 % Taking QR factorization of [Y0sN; YssN]
 
-
+r = triu(qr([Y0sN , YssN]'))';
 
 
 
