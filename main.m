@@ -55,7 +55,7 @@ for i = 2:N
 end
 
 %% 1.6 Random Walk function
-[var_eps] = AOloopRW(G,H,C_phi,sigmae,phiSim(1));
+[var_eps, HdeltaUK] = AOloopRWv2(G,H,C_phi,sigmae,phiSim(1));
 
 if sigmaNoControl < var_eps
     disp("it is better to not use the random walk method")
