@@ -49,12 +49,10 @@ phi_hat     = (inv(C_phi) + G' * G)^(-1) * G' * sk;
 usedPhiSim = cell2mat(phiSim(1));
 N = length(usedPhiSim);
 residual_wave_front = zeros(49,N);
-usedPhiSim(:,1)
 residual_wave_front(:,1) = usedPhiSim(:,1);
 for i = 2:N
     residual_wave_front(:,i) = usedPhiSim(:,i) - phi_est(i-1);
 end
-
 
 %% 1.6 Random Walk function
 [var_eps] = AOloopRW(G,H,C_phi,sigmae,phiSim(1));
@@ -66,8 +64,3 @@ elseif sigmaNoControl == var_eps
 else
     disp("using the random walk method is better than using no control")
 end
-
-    
-
-
-
