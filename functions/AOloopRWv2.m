@@ -43,11 +43,12 @@ for i = 1:m
     deltaUK(:,i) = lsqlin(C,d);
 end
 HdeltaUK = H*deltaUK;
-epsilonHatK1K = epsilonHatKK - H * deltaUK;
-
 sigma = zeros(m,1);
-for i = 1:m
-    sigma(m) = var(epsilonHatK1K(:,m));
+epsilonHatK1K = zeros(n,m);
+% calculate epsilon hat (k+1|k) and variance of epsilon hat (k+1|k)
+for i = 1:m-1
+    epsilonHatK1K(:,i+1) = epsilonHatKK(i) - H * deltaUK(:,i);
+    sigma(m) = var(epsilonHatK1K(:,i+1));
 end
 
 var_eps = mean(sigma);
