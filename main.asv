@@ -55,7 +55,7 @@ for i = 2:N
 end
 
 %% 1.6 Random Walk function
-[var_eps] = AOloopRWv2(G,H,C_phi,sigmae,phiSim(1));
+[var_eps] = AOloopRW(G,H,C_phi,sigmae,phiSim(1));
 
 if sigmaNoControl < var_eps
     disp("it is better to not use the random walk method")
@@ -64,3 +64,22 @@ elseif sigmaNoControl == var_eps
 else
     disp("using the random walk method is better than using no control")
 end
+
+
+
+
+
+
+
+%% 3.5 Subspace Identification
+
+% generating 
+phi_id = cell2mat(phiIdent(1));
+s_id = G*phi_id + wgn(72,5000,sigmae); 
+
+
+
+
+
+
+

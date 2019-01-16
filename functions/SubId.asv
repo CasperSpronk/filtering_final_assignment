@@ -1,0 +1,7 @@
+function [As,Cs,Ks]=SubId(s_id, N_id, N_val, s, n)
+Y0sN = zeros(72*s, (N-1));
+for i=1:n
+    Y0sN(:,i) = [s_id(:,i); s_id(:,i+1); s_id(:,i+2); s_id(:,i+3); s_id(:,i+4); s_id(:,i+5);
+                s_id(:,i+6); s_id(:,i+7); s_id(:,i+8); s_id(:,i+9); s_id(:,i+s);];
+    
+end
