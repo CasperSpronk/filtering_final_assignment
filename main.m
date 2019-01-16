@@ -98,6 +98,6 @@ for i=1:n
 end
 YssN = Y0sN(:, s:end);
 
-r = triu(qr([Y0sN , YssN]'))';
-
+r = triu(qr([Y0sN ; YssN]'))';
+ 
 
