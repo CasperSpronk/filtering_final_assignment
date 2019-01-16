@@ -41,9 +41,9 @@ summedPhi = 0;
 for i = 1:length(usedPhiIdent)
     summedPhi = summedPhi + usedPhiIdent(:,i)*usedPhiIdent(:,i)';
 end
-C_phi     = (1/length(usedPhiIdent))*summedPhi;
+C_phi0     = (1/length(usedPhiIdent))*summedPhi;
 % Expressing Unbiased Minimum Variance Estimate
-phi_hat     = (inv(C_phi) + G' * G)^(-1) * G' * sk;
+phi_hat     = (inv(C_phi0) + G' * G)^(-1) * G' * sk;
 
 %% 1.3
 usedPhiSim = cell2mat(phiSim(1));
@@ -55,7 +55,7 @@ for i = 2:N
 end
 
 %% 1.6 Random Walk function
-[var_eps, HdeltaUK] = AOloopRWv2(G,H,C_phi,sigmae,phiSim(1));
+[var_eps] = AOloopRWv2(G,H,C_phi0,sigmae,phiSim(1));
 
 if sigmaNoControl < var_eps
     disp("it is better to not use the random walk method")
@@ -64,8 +64,15 @@ elseif sigmaNoControl == var_eps
 else
     disp("using the random walk method is better than using no control")
 end
-
-
+sumNom = 0;
+sumDenom = 0;
+for i = 1:5000
+    sumNom = sumNom + norm(sigmaNoControl(i)-var_eps(i));
+    sumDenom = sumDenom + norm(sigmaNoControl(i));
+end
+nom = sumNom/5000;
+denom = sumDenom/5000;
+VAF = max(0,1-nom/denom);
 
 
 
