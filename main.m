@@ -28,11 +28,6 @@ V1          = V(:,1:r);
 % Expressing estimate of the wavefront
 phi_est     = V1*inv(S1)*U1'*sk;
 
-% F = V1*inv(S1)*U1';
-% ((F'*F)^-1*F')'*sk;
-% F'*F;
-% r2 = rank(F'*F);
-
 %% 1.2 Unbiased Minimum Variance Estimate
 
 usedPhiIdent = cell2mat(phiIdent(1));
@@ -55,8 +50,11 @@ for i = 2:N
 end
 
 %% 1.6 Random Walk function
+
+% Calling function
 [var_eps] = AOloopRWv2(G,H,C_phi0,sigmae,phiSim(1));
 
+% Evaluating results
 if sigmaNoControl < var_eps
     disp("it is better to not use the random walk method")
 elseif sigmaNoControl == var_eps
