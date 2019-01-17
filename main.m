@@ -90,16 +90,20 @@ end
 nom = sumNom/5000;
 denom = sumDenom/5000;
 VAFrw = max(0,(1-nom/denom)*100);
-
-%% 2.7 compute kalman matrix and var_eps of VAR model
+%% compute covariances
 
 summedPhi = 0;
-for i = 2:length(usedPhiIdent)
-    phiIdentMeanRemovedimin1 = usedPhiIdent(:,i-1) - mean(usedPhiIdent(:,i-1));
-    phiIdentMeanRemovedi = usedPhiIdent(:,i) - mean(usedPhiIdent(:,i));
-    summedPhi = summedPhi + phiIdentMeanRemovedi*phiIdentMeanRemovedimin1';
+meanlessPhiSim = usedPhiSim - mean(usedPhiSim);
+for i = 1:length(usedPhiSim)
+    summedPhi = summedPhi + meanlessPhiSim(:,i)*meanlessPhiSim(:,i)';
 end
-C_phi1 = summedPhi/(length(usedPhiIdent)-1);
+C_phi0 = summedPhi/length(usedPhiSim);
+summedPhi = 0;
+for i = 2:length(usedPhiSim)
+    summedPhi = summedPhi + meanlessPhiSim(:,i)*meanlessPhiSim(:,i-1)';
+end
+C_phi1 = summedPhi/(length(usedPhiSim)-1);
+%% 2.7 compute kalman matrix and var_eps of VAR model
 
 [ A, Cw, K ] = computeKalmanAR(C_phi0, C_phi1, G, sigmaNoControl);
 
