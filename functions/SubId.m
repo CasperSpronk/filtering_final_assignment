@@ -13,7 +13,7 @@ r = triu( qr( [Y0sN, YssN]' ) )';
 R = r(:,1:720); 
 
 % Taking SVD of ans
-[U,S,V] = svd(inv(R)*YssN));
+[U,S,V] = svd(inv(R)*YssN);
 
 % Finding estimate of Xhat_sN
 XhatsN = S.^(0.5) * V;

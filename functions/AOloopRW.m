@@ -8,10 +8,12 @@ usedPhiSim = cell2mat(phi_sim);
 % Taking partitioned svd of G
 [U,S,V]     = svd(G,'econ');
 r           = rank(G);
+U1          = U(:,1:r);
 S1          = S(1:r,1:r);
+V1          = V(:,1:r);
 
 % reconstructing wavefront
-phik_hat = pinv(G)*sko;
+phik_hat = V1*S1^(-1)*U1'*sko;
 
 [mG, nG] = size(G);
 C = -H;
@@ -21,14 +23,14 @@ sigma = zeros(m,1);
 for i = 1:m-1
     if i == 1
         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
-        phik_hat(:,i+1) = S1*sko(:,1);
+        phik_hat(:,i+1) = V1*S1*U1'*sko(:,1);
         epsk(:,i+1) = phik_hat(:,i+1);
         epsk_mean_removed(:,i+1) = phik_hat(:,i) - mean(phik_hat(:,i));
     else
         sk = G*(phik_hat(:,i+1) - H*deltaUK);
         epsk(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sk - H*deltaUK;
         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sk;
-        phik_hat(:,i+1) = S1*sk;
+        phik_hat(:,i+1) = V1*S1*U1'*sk;
         epsk_mean_removed(:,i+1) = phik_hat(:,i+1) - mean(phik_hat(:,i+1));
     end
     deltaUK = lsqlin(C,d);

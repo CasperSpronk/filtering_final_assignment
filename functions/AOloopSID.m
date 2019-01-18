@@ -13,10 +13,11 @@ x = XhatsN(1,:);
 
 % finding u(k) using lsqlin
 C = -H;
-d = -(V1*S1*U1)*Cs*As*x;
+d = -(V1*S1^-1*U1')*Cs*As*x;
 [u,resnorm,residual,exitflag,output,lambda]=lsqlin(C,d);
 
 % calculating variance of residual
-
+residual_meanless = residual - mean(residual);
+var_eps = mean(residual_meanless);
     
 end
