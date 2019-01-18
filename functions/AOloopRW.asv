@@ -5,15 +5,28 @@ function [var_eps] = AOloopRW(G,H,C_phi_zero,sigmae,phi_sim)
 usedPhiSim = cell2mat(phi_sim);
 [n, m] = size(usedPhiSim);
 
-% Taking partitioned svd of G
 [U,S,V]     = svd(G,'econ');
 r           = rank(G);
+U1          = U(:,1:r);
 S1          = S(1:r,1:r);
+V1          = V(:,1:r);
 
 % reconstructing wavefront
 phik_hat = pinv(G)*sko;
 
+phiKPlus1 = zeros(n,m);
+uk = zeros(n,m);
+epsilon = zeros(n,m+1);
 [mG, nG] = size(G);
+sk = zeros(mG,m);
+sigma = zeros(m,1);
+epsilonkplus1k = zeros(n,m);
+% disp(wgn(1,n,0))
+% calculating sk
+
+for i = 2:m
+    phiKPlus1(:,i) = phik_hat(:,i-1) + randn(n,1);
+end
 C = -H;
 epsk = zeros(n,m);
 epsk_mean_removed = zeros(n,m);

@@ -27,14 +27,15 @@ U1          = U(:,1:r);
 S1          = S(1:r,1:r);
 V1          = V(:,1:r);
 % Expressing estimate of the wavefront
-phi_est     = V1*inv(S1)*U1'*sk;
+phi_est     = S1*sk;
 
 sumNom = 0;
 sumDenom = 0;
 phik = cell2mat(phiSim(1));
 for i = 1:5000
     phik_mean_removed = phik(:,i) - mean(phik(:,i));
-    sumNom = sumNom + norm(phik_mean_removed - phi_est(:,i));
+    phi_est_mean_removed = phi_est(:,i) - mean(phi_est(:,i));
+    sumNom = sumNom + norm(phik_mean_removed - phi_est_mean_removed);
     sumDenom = sumDenom + norm(phik_mean_removed);
 end
 nom = sumNom/5000;
@@ -69,14 +70,7 @@ end
 % Calling function
 [var_eps] = AOloopRW(G,H,C_phi0,sigmae,phiSim(1));
 
-% Evaluating results
-% if sigmaNoControl < var_eps
-%     disp("it is better to not use the random walk method")
-% elseif sigmaNoControl == var_eps
-%     disp("using the random walk method yield neither better nor worse results")
-% else
-%     disp("using the random walk method is better than using no control")
-% end
+%% calculate VAF
 sumNom = 0;
 sumDenom = 0;
 nom = 0;
@@ -84,25 +78,30 @@ denom = 0;
 phik = cell2mat(phiSim(1));
 for i = 1:5000
     phik_mean_removed = phik(:,i) - mean(phik(:,i));
-    sumNom = sumNom + norm(phik_mean_removed + var_eps(:,i));
+    sumNom = sumNom + norm(phik_mean_removed + var_eps);
     sumDenom = sumDenom + norm(phik_mean_removed);
 end
 nom = sumNom/5000;
 denom = sumDenom/5000;
 VAFrw = max(0,(1-nom/denom)*100);
-
-%% 2.7 compute kalman matrix and var_eps of VAR model
+%% compute covariances
 
 summedPhi = 0;
-for i = 2:length(usedPhiIdent)
-    phiIdentMeanRemovedimin1 = usedPhiIdent(:,i-1) - mean(usedPhiIdent(:,i-1));
-    phiIdentMeanRemovedi = usedPhiIdent(:,i) - mean(usedPhiIdent(:,i));
-    summedPhi = summedPhi + phiIdentMeanRemovedi*phiIdentMeanRemovedimin1';
+meanlessPhiSim = usedPhiSim - mean(usedPhiSim);
+for i = 1:length(usedPhiSim)
+    summedPhi = summedPhi + meanlessPhiSim(:,i)*meanlessPhiSim(:,i)';
 end
-C_phi1 = summedPhi/(length(usedPhiIdent)-1);
+C_phi0 = summedPhi/length(usedPhiSim);
+summedPhi = 0;
+for i = 2:length(usedPhiSim)
+    summedPhi = summedPhi + meanlessPhiSim(:,i)*meanlessPhiSim(:,i-1)';
+end
+C_phi1 = summedPhi/(length(usedPhiSim)-1);
+%% 2.7 compute kalman matrix and var_eps of VAR model
 
 [ A, Cw, K ] = computeKalmanAR(C_phi0, C_phi1, G, sigmaNoControl);
 
+[var_eps] = AOloopAR(G,H,C_phi0,sigmae,A,Cw,K,phiSim(1));
 
 
 %% 3.5 Subspace Identification
