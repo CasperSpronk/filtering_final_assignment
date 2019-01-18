@@ -31,20 +31,20 @@ for i = 2:m
 %     sk(:,i) = G * epsilon(:,i) + randn(mG,1);
 end
 C = -H;
-% for i = 1:m-1
-%     if i == 1
-%         epsilonkplus1k(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
-%         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
-%         phik_hat(:,i+1) = pinv(G)*sko(:,1);
-%     else
-%         sk = G*(phik_hat(:,i) + rand(n,1) - H*deltaUK) + randn(mG,1);
-%         epsilonkplus1k(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sk - H*deltaUK;
-%         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sk;
-%         phik_hat(:,i+1) = pinv(G)*sk;
-%     end
-%     deltaUK = lsqlin(C,d);
-% end
-epsk = zeros(n,m);
+for i = 1:m-1
+    if i == 1
+        epsilonkplus1k(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
+        d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
+        phik_hat(:,i+1) = pinv(G)*sko(:,1);
+    else
+        sk = G*(phik_hat(:,i) + rand(n,1) - H*deltaUK) + randn(mG,1);
+        epsilonkplus1k(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sk - H*deltaUK;
+        d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sk;
+        phik_hat(:,i+1) = pinv(G)*sk;
+    end
+    deltaUK = lsqlin(C,d);
+end
+epsk = zeros(n,m);  % residual wavefront
 epsk_mean_removed = zeros(n,m);
 sigma = zeros(m,1);
 for i = 1:m-1
@@ -54,16 +54,18 @@ for i = 1:m-1
         epsk(:,i+1) = phik_hat(:,i+1);
         epsk_mean_removed(:,i+1) = phik_hat(:,i) - mean(phik_hat(:,i));
     else
-        sk = G*(phik_hat(:,i+1) - H*deltaUK);
+        sk = G*(phik_hat(:,i) - H*deltaUK);
         epsk(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sk - H*deltaUK;
         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sk;
         phik_hat(:,i+1) = pinv(G)*sk;
         epsk_mean_removed(:,i+1) = phik_hat(:,i+1) - mean(phik_hat(:,i+1));
     end
     deltaUK = lsqlin(C,d);
-    sigma(i+1) = var(epsk_mean_removed(:,i+1));
+    sigma(i+1) = var(eps_piston_removed(:,k+1));
 end
-var_eps = mean(sigma);
+var_eps_mean_removed = epsilonkplus1k - mean(epsilonkplus1k);
+var_eps = var(var_eps_mean_removed);
+var_eps = mean(var_eps);
 % var_eps = mean(var_eps);
 % var_eps = mean(var_eps);
 

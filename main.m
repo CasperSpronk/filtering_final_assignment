@@ -27,14 +27,15 @@ U1          = U(:,1:r);
 S1          = S(1:r,1:r);
 V1          = V(:,1:r);
 % Expressing estimate of the wavefront
-phi_est     = V1*inv(S1)*U1'*sk;
+phi_est     = pinv(G)*sk;
 
 sumNom = 0;
 sumDenom = 0;
 phik = cell2mat(phiSim(1));
 for i = 1:5000
     phik_mean_removed = phik(:,i) - mean(phik(:,i));
-    sumNom = sumNom + norm(phik_mean_removed - phi_est(:,i));
+    phi_est_mean_removed = phi_est(:,i) - mean(phi_est(:,i));
+    sumNom = sumNom + norm(phik_mean_removed - phi_est_mean_removed);
     sumDenom = sumDenom + norm(phik_mean_removed);
 end
 nom = sumNom/5000;
@@ -77,6 +78,7 @@ end
 % else
 %     disp("using the random walk method is better than using no control")
 % end
+%% calculate VAF
 sumNom = 0;
 sumDenom = 0;
 nom = 0;
@@ -84,7 +86,7 @@ denom = 0;
 phik = cell2mat(phiSim(1));
 for i = 1:5000
     phik_mean_removed = phik(:,i) - mean(phik(:,i));
-    sumNom = sumNom + norm(phik_mean_removed + var_eps(:,i));
+    sumNom = sumNom + norm(phik_mean_removed + var_eps);
     sumDenom = sumDenom + norm(phik_mean_removed);
 end
 nom = sumNom/5000;
@@ -107,6 +109,7 @@ C_phi1 = summedPhi/(length(usedPhiSim)-1);
 
 [ A, Cw, K ] = computeKalmanAR(C_phi0, C_phi1, G, sigmaNoControl);
 
+[var_eps] = AOloopAR(G,H,C_phi0,sigmae,A,Cw,K,phiSim(1));
 
 
 %% 3.5 Subspace Identification

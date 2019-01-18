@@ -27,14 +27,15 @@ U1          = U(:,1:r);
 S1          = S(1:r,1:r);
 V1          = V(:,1:r);
 % Expressing estimate of the wavefront
-phi_est     = V1*inv(S1)*U1'*sk;
+phi_est     = pinv(G)*sk;
 
 sumNom = 0;
 sumDenom = 0;
 phik = cell2mat(phiSim(1));
 for i = 1:5000
     phik_mean_removed = phik(:,i) - mean(phik(:,i));
-    sumNom = sumNom + norm(phik_mean_removed - phi_est(:,i));
+    phi_est_mean_removed = phi_est(:,i) - mean(phi_est(:,i));
+    sumNom = sumNom + norm(phik_mean_removed - phi_est_mean_removed);
     sumDenom = sumDenom + norm(phik_mean_removed);
 end
 nom = sumNom/5000;
@@ -84,7 +85,7 @@ denom = 0;
 phik = cell2mat(phiSim(1));
 for i = 1:5000
     phik_mean_removed = phik(:,i) - mean(phik(:,i));
-    sumNom = sumNom + norm(phik_mean_removed + var_eps(:,i));
+    sumNom = sumNom + norm(phik_mean_removed + var_eps(i));
     sumDenom = sumDenom + norm(phik_mean_removed);
 end
 nom = sumNom/5000;
@@ -98,26 +99,16 @@ for i = 1:length(usedPhiSim)
     summedPhi = summedPhi + meanlessPhiSim(:,i)*meanlessPhiSim(:,i)';
 end
 C_phi0 = summedPhi/length(usedPhiSim);
-
+summedPhi = 0;
 for i = 2:length(usedPhiSim)
-    summedPhi = summedPhi + meanlessPhiSim(:,i)*meanlessPhi
+    summedPhi = summedPhi + meanlessPhiSim(:,i)*meanlessPhiSim(:,i-1)';
 end
-
+C_phi1 = summedPhi/(length(usedPhiSim)-1);
 %% 2.7 compute kalman matrix and var_eps of VAR model
 
-summedPhi = 0;
-for i = 2:length(usedPhiIdent)
-    phiIdentMeanRemovedimin1 = usedPhiIdent(:,i-1) - mean(usedPhiIdent(:,i-1));
-    phiIdentMeanRemovedi = usedPhiIdent(:,i) - mean(usedPhiIdent(:,i));
-    summedPhi = summedPhi + phiIdentMeanRemovedi*phiIdentMeanRemovedimin1';
-end
-C_phi1 = summedPhi/(length(usedPhiIdent)-1);
-phiIdentMeanless = usedPhiIdent - mean(usedPhiIdent);
-
-C_phi0 = cov(phiIdentMeanless(:),phiIdentMeanless(:)');
-%%
 [ A, Cw, K ] = computeKalmanAR(C_phi0, C_phi1, G, sigmaNoControl);
 
+[var_eps] = AOloopAR(G,H,C_phi0,sigmae,A,Cw,K,phiSim(1));
 
 
 %% 3.5 Subspace Identification
