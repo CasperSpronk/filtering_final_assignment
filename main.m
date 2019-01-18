@@ -106,25 +106,17 @@ C_phi1 = summedPhi/(length(usedPhiIdent)-1);
 
 
 %% 3.5 Subspace Identification
-
-
-s=10;           
-n=500;           %order of system
-
-
-
 % generating noisy wavefront signal s_id
 phi_id = cell2mat(phiIdent(1));
 s_id = G*phi_id + randn(72,5000)*sigmae^2; 
+% determining s
+% s<n with n = rank(R) = 649 an 2p^2s<n so we take:
+s = 10;
+N_id = 4000;
+N_val= N_id -s;
+% Calling function
+% [As,Cs,Ks] = SubId(s_id, N_id, N_val, s, n);
 
-%% TEST QR
-Y0sN = zeros(72*s, (n));
-for i=1:n
-    Y0sN(:,i) = [s_id(:,i); s_id(:,i+1); s_id(:,i+2); s_id(:,i+3); s_id(:,i+4); s_id(:,i+5);
-                s_id(:,i+6); s_id(:,i+7); s_id(:,i+8); s_id(:,s)];
-end
-YssN = Y0sN(:, s:end);
 
-r = triu(qr([Y0sN ; YssN]'))';
- 
+
 

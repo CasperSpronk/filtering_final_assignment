@@ -5,6 +5,7 @@ function [var_eps] = AOloopRW(G,H,C_phi_zero,sigmae,phi_sim)
 usedPhiSim = cell2mat(phi_sim);
 [n, m] = size(usedPhiSim);
 
+% Taking partitioned svd of G
 [U,S,V]     = svd(G,'econ');
 r           = rank(G);
 U1          = U(:,1:r);

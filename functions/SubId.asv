@@ -13,7 +13,7 @@ r = triu( qr( [Y0sN, YssN]' ) )';
 R = r(:,1:720); 
 
 % Taking SVD of ans
-[U,S,V] = svd(inv(R)*YssN));
+[U,S,V] = svd(inv(R)*YssN))
 
 % Finding estimate of Xhat_sN
 XhatsN = S.^(0.5) * V;
@@ -28,13 +28,8 @@ C = XhatsN(:,s:end-1);
 As_res=residual(1:72,:);
 Cs_res=residual(73:end,:);
 
-% Calculating Covariance matrices of residuals
-Qhat =;
-Shat =;
-Rhat =;
 
-% Calculating Phat from dare 
-Phat=dare(As,Cs,Qhat,Rhat,Shat);
+
 
 % Calculating Ks
-Ks = (Shat + As*Phat*Cs')(Rhat + Cs*phat*Cs')^(-1);
+Ks = (
