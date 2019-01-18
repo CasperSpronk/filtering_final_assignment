@@ -27,7 +27,7 @@ U1          = U(:,1:r);
 S1          = S(1:r,1:r);
 V1          = V(:,1:r);
 % Expressing estimate of the wavefront
-phi_est     = pinv(G)*sk;
+phi_est     = S1*sk;
 
 sumNom = 0;
 sumDenom = 0;
@@ -70,14 +70,6 @@ end
 % Calling function
 [var_eps] = AOloopRW(G,H,C_phi0,sigmae,phiSim(1));
 
-% Evaluating results
-% if sigmaNoControl < var_eps
-%     disp("it is better to not use the random walk method")
-% elseif sigmaNoControl == var_eps
-%     disp("using the random walk method yield neither better nor worse results")
-% else
-%     disp("using the random walk method is better than using no control")
-% end
 %% calculate VAF
 sumNom = 0;
 sumDenom = 0;

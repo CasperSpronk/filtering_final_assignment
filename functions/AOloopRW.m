@@ -7,90 +7,30 @@ usedPhiSim = cell2mat(phi_sim);
 
 [U,S,V]     = svd(G,'econ');
 r           = rank(G);
-U1          = U(:,1:r);
 S1          = S(1:r,1:r);
-V1          = V(:,1:r);
 
 % reconstructing wavefront
 phik_hat = pinv(G)*sko;
 
-phiKPlus1 = zeros(n,m);
-uk = zeros(n,m);
-epsilon = zeros(n,m+1);
 [mG, nG] = size(G);
-sk = zeros(mG,m);
-sigma = zeros(m,1);
-epsilonkplus1k = zeros(n,m);
-% disp(wgn(1,n,0))
-% calculating sk
-
-for i = 2:m
-    phiKPlus1(:,i) = phik_hat(:,i-1) + randn(n,1);
-%     uk(:,i) = H^-1 * phiKPlus1(:,i);
-%     epsilon(:,i+1) = phiKPlus1(:,i) - H * uk(:,i);
-%     sk(:,i) = G * epsilon(:,i) + randn(mG,1);
-end
 C = -H;
-% for i = 1:m-1
-%     if i == 1
-%         epsilonkplus1k(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
-%         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
-%         phik_hat(:,i+1) = pinv(G)*sko(:,1);
-%     else
-%         sk = G*(phik_hat(:,i) + rand(n,1) - H*deltaUK) + randn(mG,1);
-%         epsilonkplus1k(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sk - H*deltaUK;
-%         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sk;
-%         phik_hat(:,i+1) = pinv(G)*sk;
-%     end
-%     deltaUK = lsqlin(C,d);
-% end
 epsk = zeros(n,m);
 epsk_mean_removed = zeros(n,m);
 sigma = zeros(m,1);
 for i = 1:m-1
     if i == 1
         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sko(:,1);
-        phik_hat(:,i+1) = pinv(G)*sko(:,1);
+        phik_hat(:,i+1) = S1*sko(:,1);
         epsk(:,i+1) = phik_hat(:,i+1);
         epsk_mean_removed(:,i+1) = phik_hat(:,i) - mean(phik_hat(:,i));
     else
         sk = G*(phik_hat(:,i+1) - H*deltaUK);
         epsk(:,i+1) = (C_phi_zero^-1 + G'*G)^-1 * G'*sk - H*deltaUK;
         d = -(C_phi_zero^-1 + G'*G)^-1 * G'*sk;
-        phik_hat(:,i+1) = pinv(G)*sk;
+        phik_hat(:,i+1) = S1*sk;
         epsk_mean_removed(:,i+1) = phik_hat(:,i+1) - mean(phik_hat(:,i+1));
     end
     deltaUK = lsqlin(C,d);
     sigma(i+1) = var(epsk_mean_removed(:,i+1));
 end
 var_eps = mean(sigma);
-% var_eps = mean(var_eps);
-% var_eps = mean(var_eps);
-
-% 
-% epsilonHatKK = zeros(n,m);
-% % calculating epsilon hat KK
-% for i = 2:m
-%     epsilonHatKK(:,i) = (C_phi_zero^-1 + G'*G)^-1 * G' * sk(:,i);
-% end
-% % 
-% % C = -H;
-% % deltaUK = zeros(n,m);
-% % solving linear least squares problem formulated in 1.5
-% % for i = 1:m
-% %     d = epsilonHatKK(:,i);
-% %     deltaUK(:,i) = lsqlin(C,d);
-% % end
-% HdeltaUK = H*deltaUK;
-% sigma = zeros(m,1);
-% epsilonHatK1K = zeros(n,m);
-% % calculate epsilon hat (k+1|k) and variance of epsilon hat (k+1|k)
-% for i = 1:m-1
-%     epsilonHatK1K(:,i+1) = epsilonHatKK(i) - H * deltaUK(:,i);
-%     sigma(m) = var(epsilonHatK1K(:,i+1));
-% end
-% 
-% var_eps = mean(sigma);
-
-
-
